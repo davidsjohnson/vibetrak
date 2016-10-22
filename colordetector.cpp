@@ -53,13 +53,13 @@ void ColorDetector::run(const cv::Mat& src, cv::Mat& dst)
         throw std::invalid_argument("src shoud be a BGR Image");
 
     // Convert image to HSV
-    cv::cvtColor(src, dst, cv::COLOR_BGR2HSV);
+    cv::cvtColor(src, dst, cv::COLOR_RGB2HSV);
 
     // threshold the images with HSV values
     cv::inRange(dst, cv::Scalar(m_lowH, m_lowS, m_lowV),  cv::Scalar(m_highH, m_highS, m_highV), dst);
 
     // Morphological opening and closing to reduce noise
-    int kernelSize = 7;
+    int kernelSize = 5;
     cv::Mat kernel(kernelSize, kernelSize, CV_8U, 1);
     cv::morphologyEx(dst, dst, cv::MORPH_OPEN, kernel);
     cv::morphologyEx(dst, dst, cv::MORPH_CLOSE, kernel);
