@@ -22,3 +22,6 @@ INCLUDEPATH += /usr/local/OpenNI_2.2/include
 DEPENDPATH  += /usr/local/OpenNI_2.2/include
 
 INCLUDEPATH += /usr/local/boost_1_62_0
+
+DISTFILES += \
+    $$PWD/README.md
