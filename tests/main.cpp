@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(webcam_test)
 
 BOOST_AUTO_TEST_CASE(oni_test)
 {
-    OniStream oni("/Users/fortjay81/Projects/build-VPT_Viewer-Desktop_Qt_5_7_0_clang_64bit-Debug/onistream_test.oni");
+    OniStream oni("/Users/fortjay81/Projects/build-VibeTrak-Desktop_Qt_5_7_0_clang_64bit-Debug/onistream_test.oni");
     BOOST_CHECK(oni.isLive());
     BOOST_REQUIRE(oni.isOpened());
 
