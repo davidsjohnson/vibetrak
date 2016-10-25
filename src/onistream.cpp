@@ -108,7 +108,7 @@ openni::Status OniStream::init(const char* deviceUri)
     bool registration_supported = m_device.isImageRegistrationModeSupported(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
     if (registration_supported)
     {
-        m_device.setDepthColorSyncEnabled(true);
+        rc = m_device.setDepthColorSyncEnabled(true);
         m_device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
         printf("\tOniStream: Image Registration Depth to Color Set Successfully\n");
     }
@@ -170,7 +170,7 @@ openni::Status OniStream::initRecorder()
     }
 
     // Attach the Color Stream
-    rc = m_recorder.attach(m_colorStream, false);
+    rc = m_recorder.attach(m_colorStream, true);
     if (rc != openni::STATUS_OK)
     {
         printf("OniStream: Unable to Create Recording; Color Stream Not Attached");
@@ -200,17 +200,20 @@ bool OniStream::next(cv::Mat& frame)
         return false;
     }
 
-    switch (changedIndex)
-    {
-    case 0:
-        m_depthStream.readFrame(&m_depthFrame);
-        break;
-    case 1:
-        m_colorStream.readFrame(&m_colorFrame);
-        break;
-    default:
-        printf("OniViewer: Error in Wait\n");
-    }
+//    switch (changedIndex)
+//    {
+//    case 0:
+//        m_colorStream.readFrame(&m_depthFrame);
+//        break;
+//    case 1:
+//        m_depthStream.readFrame(&m_colorFrame);
+//        break;
+//    default:
+//        printf("OniViewer: Error in Wait\n");
+//    }
+
+    m_colorStream.readFrame(&m_depthFrame);
+    m_depthStream.readFrame(&m_colorFrame);
 
     // Process Depth Frame
 //    if (m_depthFrame.isValid())
@@ -221,17 +224,15 @@ bool OniStream::next(cv::Mat& frame)
 //        cv::Mat temp(m_depthHeight, m_depthWidth, CV_16UC1);
 //        memcpy(temp.data, pImgBuffer, m_depthFrame.getDataSize());
 
-//        frame.create(m_depthHeight, m_depthWidth, CV_8UC1);
+//        frame.create(m_depthHeight, m_depthWidqth, CV_8UC1);
 //        cv::normalize(temp, frame, 0, 255, cv::NORM_MINMAX, CV_8UC1);
 //    }
 
     if (m_colorFrame.isValid()){
         const openni::RGB888Pixel* pImgBuffer = (const openni::RGB888Pixel*)m_colorFrame.getData();
 
-        frame.create(424, 512, CV_8UC3);
-//        memcpy(colorFrame.data, pImgBuffer, m_colorFrame.getDataSize());
-        memcpy(frame.data, pImgBuffer, 424*512*sizeof(openni::RGB888Pixel));
-
+        frame.create(m_colorHeight, m_colorWidth, CV_8UC3);
+        memcpy(frame.data, pImgBuffer, m_colorFrame.getDataSize());
     }
 
     return true;
@@ -265,20 +266,23 @@ bool OniStream::next(cv::Mat& depthFrame, cv::Mat& colorFrame)
         const openni::DepthPixel* pImgBuffer = (const openni::DepthPixel*)m_depthFrame.getData();
 
         // Copy data buffer to an OpenCV Mat object
-        cv::Mat temp(m_depthHeight, m_depthWidth, CV_16UC1);
-        memcpy(temp.data, pImgBuffer, m_depthFrame.getDataSize());
+        cv::Mat temp(480, 640, CV_16UC1);
+        memcpy(temp.data, pImgBuffer, 640*480*sizeof(openni::DepthPixel));
 
-        cv::normalize(temp, depthFrame, 0, 255, cv::NORM_MINMAX, CV_8UC1);
+        cv::Rect r(0, 0, 512, 424);
+        cv::normalize(temp(r), depthFrame, 0, 255, cv::NORM_MINMAX, CV_8UC1);
     }
 
     if (m_colorFrame.isValid()){
         const openni::RGB888Pixel* pImgBuffer = (const openni::RGB888Pixel*)m_colorFrame.getData();
 
-        colorFrame.create(424, 512, CV_8UC3);
+//        colorFrame.create(m_colorHeight, m_colorWidth, CV_8UC3);
 //        memcpy(colorFrame.data, pImgBuffer, m_colorFrame.getDataSize());
-        memcpy(colorFrame.data, pImgBuffer, 424*512*sizeof(openni::RGB888Pixel));
 
+        colorFrame.create(424, 512, CV_8UC3);
+        memcpy(colorFrame.data, pImgBuffer, 512*424*sizeof(openni::RGB888Pixel));
     }
+
 
     return true;
 }
