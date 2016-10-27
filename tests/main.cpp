@@ -26,11 +26,11 @@ BOOST_AUTO_TEST_CASE(oni_test)
     BOOST_CHECK(oni.isLive());
     BOOST_REQUIRE(oni.isOpened());
 
-    cv::Mat frame;
+    VibeFrame frame;
     for (int i = 0; i < 100; i++)
     {
         BOOST_CHECK(oni.next(frame));
-        BOOST_CHECK(frame.rows > 0);
+        BOOST_CHECK(frame.colorFrame.rows > 0);
     }
 }
 
@@ -40,20 +40,16 @@ BOOST_AUTO_TEST_CASE(frame_test)
     OniStream oni("/Users/fortjay81/Projects/build-VibeTrak-Desktop_Qt_5_7_0_clang_64bit-Debug/onistream_test.oni");
     BOOST_REQUIRE(oni.isOpened());
 
-    cv::Mat depthFrame;
-    cv::Mat colorFrame;
+    VibeFrame frame;
 
     for (int i = 0; i < 10; ++i)
     {
-        oni.next(depthFrame, colorFrame);
+        oni.next(frame);
     }
 
-    BOOST_REQUIRE(depthFrame.size > 0);
-    BOOST_REQUIRE(colorFrame.size > 0);
+    BOOST_REQUIRE(frame.depthFrame.size > 0);
+    BOOST_REQUIRE(frame.colorFrame.size > 0);
 
-    VibeFrame frame(depthFrame, colorFrame);
-    BOOST_REQUIRE(frame.depthFrame.rows > 0);
-    BOOST_REQUIRE(frame.colorFrame.rows > 0);
     BOOST_CHECK_EQUAL(frame.depthFrame.rows, frame.colorFrame.rows);
     BOOST_CHECK_EQUAL(frame.depthFrame.cols, frame.colorFrame.cols);
 

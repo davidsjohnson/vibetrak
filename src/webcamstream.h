@@ -14,8 +14,8 @@ public:
     bool isLive();
     bool isOpened();
 
-    bool next(cv::Mat& frame);
-    bool previous(cv::Mat& frame);
+    bool next(VibeFrame& frame);
+    bool previous(VibeFrame& frame);
 
     void play();
 

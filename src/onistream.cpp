@@ -6,13 +6,20 @@
 #define MIN_CHUNKS_SIZE(data_size, chunk_size)	(MIN_NUM_CHUNKS(data_size, chunk_size) * (chunk_size))
 
 
+/*
+ * Initializes OpenNI with the first device it finds
+ * The steram is also set to record data to an ONI file.  UPDATE: remove this when a gui is implemented
+*/
 OniStream::OniStream():
 m_streams(NULL)
 {
-    m_opened = (init() == openni::STATUS_OK); // && initRecorder() == openni::STATUS_OK);
-    record(); // Always start recording.  FOR NOW....
+    m_opened = (init() == openni::STATUS_OK);
+    record();
 }
 
+/*
+ * Initializes OpenNI with a specific ONI file
+*/
 OniStream::OniStream(const char* oniFile):
 m_streams(NULL)
 {
@@ -30,6 +37,11 @@ OniStream::~OniStream()
     printf("OniStream Closed Successfully\n\n");
 }
 
+
+/*
+ * Initializes OpenNI with a color and/or depth stream depending
+ * on the capabilities of the device
+ */
 openni::Status OniStream::init(const char* deviceUri)
 {
     openni::Status rc = openni::STATUS_OK;
@@ -64,7 +76,6 @@ openni::Status OniStream::init(const char* deviceUri)
 
     // Grab the Color Stream
     rc = m_colorStream.create(m_device, openni::SENSOR_COLOR);
-    //m_colorStream.setCropping(0,0, 640, 480);
     if (rc == openni::STATUS_OK)
     {
         rc = m_colorStream.start();
@@ -80,15 +91,15 @@ openni::Status OniStream::init(const char* deviceUri)
     }
 
     // Verify at least one stream is valid
-    openni::VideoMode depthVideoMode;
-    openni::VideoMode colorVideoMode;
-
     if (!m_depthStream.isValid() && !m_colorStream.isValid())
     {
         printf("OniViewer: No Valid Streams. Exiting.\n");
         openni::OpenNI::shutdown();
         return openni::STATUS_ERROR;
     }
+
+    openni::VideoMode depthVideoMode;
+    openni::VideoMode colorVideoMode;
 
     if (m_depthStream.isValid())
     {
@@ -113,7 +124,7 @@ openni::Status OniStream::init(const char* deviceUri)
         printf("\tOniStream: Image Registration Depth to Color Set Successfully\n");
     }
 
-    // Get video modes of device
+    // Get and Print video modes of each stream in device
     printf("--Color Modes--\n");
     const openni::SensorInfo* s_info = m_device.getSensorInfo(openni::SENSOR_COLOR);
     const openni::Array<openni::VideoMode>& modes_color = s_info->getSupportedVideoModes();
@@ -136,6 +147,8 @@ openni::Status OniStream::init(const char* deviceUri)
             modes_depth[i].getFps(), modes_depth[i].getPixelFormat());
         i++;
     }
+
+    //Print Pixel values
     printf("Min Pixel Value: %d | Max Pixel Value: %d", m_depthStream.getMinPixelValue(), m_depthStream.getMaxPixelValue());
     printf("\n");
 
@@ -146,12 +159,13 @@ openni::Status OniStream::init(const char* deviceUri)
     return openni::STATUS_OK;
 }
 
+
+/*
+ * Initializes and creates a recorder for recording session
+ * to an ONI File
+ */
 openni::Status OniStream::initRecorder()
 {
-    /*****************************
-    Initialize and Create Recorder
-    *****************************/
-
     openni::Status rc = openni::STATUS_OK;
 
     rc = m_recorder.create("onistream.oni");
@@ -180,18 +194,33 @@ openni::Status OniStream::initRecorder()
     return openni::STATUS_OK;
 }
 
+
+/*
+ * Returns true if this is a live stream and false otherwise.
+ * Needed since a live stream cannot go in reverse
+ */
 bool OniStream::isLive()
 {
     return true;
 }
 
+
+/*
+ * Returns true if this is strem is opened successfully and false otherwise.
+ */
 bool OniStream::isOpened()
 {
     return m_opened;
 }
 
-bool OniStream::next(cv::Mat& frame)
+/*
+ * Generates an OpenCV mat with the data from current frame
+ * The Mat is in BGR format
+ * UPDATE: How to handle color vs depth (or should we care)
+ */
+bool OniStream::next(VibeFrame& frame)
 {
+    // Wait for an available stream and check which stream was updated
     int changedIndex;
     openni::Status rc = openni::OpenNI::waitForAnyStream(m_streams, 2, &changedIndex);
     if (rc != openni::STATUS_OK)
@@ -200,60 +229,15 @@ bool OniStream::next(cv::Mat& frame)
         return false;
     }
 
-//    switch (changedIndex)
-//    {
-//    case 0:
-//        m_colorStream.readFrame(&m_depthFrame);
-//        break;
-//    case 1:
-//        m_depthStream.readFrame(&m_colorFrame);
-//        break;
-//    default:
-//        printf("OniViewer: Error in Wait\n");
-//    }
-
-    m_colorStream.readFrame(&m_depthFrame);
-    m_depthStream.readFrame(&m_colorFrame);
-
-    // Process Depth Frame
-//    if (m_depthFrame.isValid())
-//    {
-//        const openni::DepthPixel* pImgBuffer = (const openni::DepthPixel*)m_depthFrame.getData();
-
-//        // Copy data buffer to an OpenCV Mat object
-//        cv::Mat temp(m_depthHeight, m_depthWidth, CV_16UC1);
-//        memcpy(temp.data, pImgBuffer, m_depthFrame.getDataSize());
-
-//        frame.create(m_depthHeight, m_depthWidqth, CV_8UC1);
-//        cv::normalize(temp, frame, 0, 255, cv::NORM_MINMAX, CV_8UC1);
-//    }
-
-    if (m_colorFrame.isValid()){
-        const openni::RGB888Pixel* pImgBuffer = (const openni::RGB888Pixel*)m_colorFrame.getData();
-
-        frame.create(m_colorHeight, m_colorWidth, CV_8UC3);
-        memcpy(frame.data, pImgBuffer, m_colorFrame.getDataSize());
-    }
-
-    return true;
-}
-
-bool OniStream::next(cv::Mat& depthFrame, cv::Mat& colorFrame)
-{
-    int changedIndex;
-    openni::Status rc = openni::OpenNI::waitForAnyStream(m_streams, 2, &changedIndex);
-    if (rc != openni::STATUS_OK)
-    {
-        printf("OniViewer: Wait Failed\n");
-        return false;
-    }
-
+    // Check which stream was updated
     switch (changedIndex)
     {
     case 0:
+//        printf("#### Color ####\n");
         m_colorStream.readFrame(&m_colorFrame);
         break;
     case 1:
+//        printf("#### Depth ####\n");
         m_depthStream.readFrame(&m_depthFrame);
         break;
     default:
@@ -270,29 +254,34 @@ bool OniStream::next(cv::Mat& depthFrame, cv::Mat& colorFrame)
         memcpy(temp.data, pImgBuffer, 640*480*sizeof(openni::DepthPixel));
 
         cv::Rect r(0, 0, 512, 424);
-        cv::normalize(temp(r), depthFrame, 0, 255, cv::NORM_MINMAX, CV_8UC1);
+        cv::normalize(temp(r), frame.depthFrame, 0, 255, cv::NORM_MINMAX, CV_8UC1);
     }
 
+    // Process Color Frame
     if (m_colorFrame.isValid()){
         const openni::RGB888Pixel* pImgBuffer = (const openni::RGB888Pixel*)m_colorFrame.getData();
 
-//        colorFrame.create(m_colorHeight, m_colorWidth, CV_8UC3);
-//        memcpy(colorFrame.data, pImgBuffer, m_colorFrame.getDataSize());
+//        frame.colorFrame.create(m_colorHeight, m_colorWidth, CV_8UC3);
+//        memcpy(frame.colorFrame.data, pImgBuffer, m_colorFrame.getDataSize());
 
-        colorFrame.create(424, 512, CV_8UC3);
-        memcpy(colorFrame.data, pImgBuffer, 512*424*sizeof(openni::RGB888Pixel));
+        frame.colorFrame.create(424, 512, CV_8UC3);
+        memcpy(frame.colorFrame.data, pImgBuffer, 424*512*sizeof(openni::RGB888Pixel));
     }
-
 
     return true;
 }
 
-
-bool OniStream::previous(cv::Mat& frame)
+/*
+ * Returns previous frame data if data stream isn't live
+ */
+bool OniStream::previous(VibeFrame& frame)
 {
    return false;
 }
 
+/*
+ * Initializes (if necessary) and starts recording the session
+ */
 void OniStream::record()
 {
     openni::Status rc = openni::STATUS_OK;
@@ -306,6 +295,11 @@ void OniStream::record()
     }
 }
 
+/*
+ * Stops Recording
+ * If record is started after stopping
+ * the ONI file will be appended to
+ */
 void OniStream::stopRecording()
 {
     m_recorder.stop();

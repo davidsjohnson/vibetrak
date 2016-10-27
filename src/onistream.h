@@ -16,9 +16,8 @@ public:
     bool isLive();
     bool isOpened();
 
-    bool next(cv::Mat &frame);
-    bool next(cv::Mat& depthFrame, cv::Mat &colorFrame);
-    bool previous(cv::Mat& frame);
+    bool next(VibeFrame& frame);
+    bool previous(VibeFrame& frame);
 
     void record();
     void stopRecording();

@@ -29,15 +29,13 @@ void WebcamStream::play()
     }
 }
 
-bool WebcamStream::next(cv::Mat& frame)
+bool WebcamStream::next(VibeFrame& frame)
 {
-    m_capture >> frame;
+    m_capture >> frame.colorFrame;
     return true;
 }
 
-bool WebcamStream::previous(cv::Mat& frame)
+bool WebcamStream::previous(VibeFrame& frame)
 {
-    frame = NULL;\
-
-    return true;
+    return false;
 }
