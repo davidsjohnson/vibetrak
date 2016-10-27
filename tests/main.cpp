@@ -4,6 +4,7 @@
 #include "webcamstream.h"
 #include "onistream.h"
 #include "vibeframe.h"
+#include "colordetector.h"
 
 
 //BOOST_AUTO_TEST_CASE(webcam_test)
@@ -30,7 +31,10 @@ BOOST_AUTO_TEST_CASE(oni_test)
     for (int i = 0; i < 100; i++)
     {
         BOOST_CHECK(oni.next(frame));
-        BOOST_CHECK(frame.colorFrame.rows > 0);
+        if (i > 10)
+        {
+            BOOST_CHECK(frame.colorFrame.rows > 0);
+        }
     }
 }
 
@@ -38,13 +42,17 @@ BOOST_AUTO_TEST_CASE(frame_test)
 {
 //    OniStream oni;
     OniStream oni("/Users/fortjay81/Projects/build-VibeTrak-Desktop_Qt_5_7_0_clang_64bit-Debug/onistream_test.oni");
+    ColorDetector cd;
+    cd.setColorValues(110, 130, 50, 255, 50, 255, 100); //magic numbers from running set color values with webcam...
+
     BOOST_REQUIRE(oni.isOpened());
 
     VibeFrame frame;
 
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 100; ++i)
     {
         oni.next(frame);
+        cd.run(frame);
     }
 
     BOOST_REQUIRE(frame.depthFrame.size > 0);
@@ -52,5 +60,7 @@ BOOST_AUTO_TEST_CASE(frame_test)
 
     BOOST_CHECK_EQUAL(frame.depthFrame.rows, frame.colorFrame.rows);
     BOOST_CHECK_EQUAL(frame.depthFrame.cols, frame.colorFrame.cols);
+
+    BOOST_CHECK(frame.mallets.size() > 0);
 
 }

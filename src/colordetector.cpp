@@ -30,7 +30,7 @@ void ColorDetector::setColorValues(VideoStream& colorStream)
 
         if (!frame.colorFrame.empty()){
             run(frame);
-//            cv::imshow("Threshold Values", frame.colorFrame);
+            cv::imshow("Threshold Values", frame.colorFrame);
             if (cv::waitKey(1) >= 0) break;
         }
     }
