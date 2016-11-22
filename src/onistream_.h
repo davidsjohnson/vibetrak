@@ -20,7 +20,7 @@ public:
     bool next(cv::Mat& depthFrame, cv::Mat &colorFrame);
     bool previous(cv::Mat& frame);
 
-    void record();
+    void record(string filename);
     void stopRecording();
 
 protected:

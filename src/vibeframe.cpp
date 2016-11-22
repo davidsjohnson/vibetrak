@@ -25,4 +25,6 @@ vector<Point3d> VibeFrame::getMalletLocations()
         p.z = depthFrame.at<int>(cv::Point(p.x, p.y));
         locations.push_back(p);
     }
+
+    return locations;
 }

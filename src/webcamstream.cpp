@@ -1,7 +1,7 @@
 #include "webcamstream.h"
 
-WebcamStream::WebcamStream():
-    m_capture(0)
+WebcamStream::WebcamStream(VideoStream* parent):
+    VideoStream(parent), m_capture(0)
 {
 
 }
@@ -17,17 +17,17 @@ bool WebcamStream::isLive()
     return true;
 }
 
-void WebcamStream::play()
-{
-    while(true)
-    {
-        cv::Mat frame;
-        m_capture >> frame;
+//void WebcamStream::play()
+//{
+//    while(true)
+//    {
+//        cv::Mat frame;
+//        m_capture >> frame;
 
-        cv::imshow("Webcam", frame);
-        if (cv::waitKey(20) >= 0) break;
-    }
-}
+//        cv::imshow("Webcam", frame);
+//        if (cv::waitKey(20) >= 0) break;
+//    }
+//}
 
 bool WebcamStream::next(VibeFrame& frame)
 {

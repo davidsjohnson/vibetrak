@@ -1,5 +1,8 @@
 #include "onistream.h"
 
+#include <opencv/cv.h>
+#include <opencv2/imgproc.hpp>
+
 #define TEXTURE_SIZE	512
 
 #define MIN_NUM_CHUNKS(data_size, chunk_size)	((((data_size)-1) / (chunk_size) + 1))
@@ -8,32 +11,29 @@
 
 /*
  * Initializes OpenNI with the first device it finds
- * The steram is also set to record data to an ONI file.  UPDATE: remove this when a gui is implemented
 */
-OniStream::OniStream():
-m_streams(NULL)
+OniStream::OniStream(QObject* parent):
+VideoStream(parent), m_streams(NULL)
 {
     m_opened = (init() == openni::STATUS_OK);
-    record();
 }
 
 /*
  * Initializes OpenNI with a specific ONI file
 */
-OniStream::OniStream(const char* oniFile):
-m_streams(NULL)
+OniStream::OniStream(const char* oniFile, QObject* parent):
+VideoStream(parent), m_streams(NULL)
 {
     m_opened = (init(oniFile) == openni::STATUS_OK);
+    m_recording = false;
 }
 
 OniStream::~OniStream()
 {
-
     if (m_streams != NULL)
     {
         delete []m_streams;
     }
-
     printf("OniStream Closed Successfully\n\n");
 }
 
@@ -44,6 +44,12 @@ OniStream::~OniStream()
  */
 openni::Status OniStream::init(const char* deviceUri)
 {
+
+    if (deviceUri==openni::ANY_DEVICE)
+        m_live = true;
+    else
+        m_live = false;
+
     openni::Status rc = openni::STATUS_OK;
 
     // Initialize and Open the device
@@ -164,11 +170,11 @@ openni::Status OniStream::init(const char* deviceUri)
  * Initializes and creates a recorder for recording session
  * to an ONI File
  */
-openni::Status OniStream::initRecorder()
+openni::Status OniStream::initRecorder(string filename)
 {
     openni::Status rc = openni::STATUS_OK;
 
-    rc = m_recorder.create("onistream.oni");
+    rc = m_recorder.create(filename.c_str());
     if (rc != openni::STATUS_OK)
     {
         printf("OniStream: Unable to Create Recorder");
@@ -201,17 +207,13 @@ openni::Status OniStream::initRecorder()
  */
 bool OniStream::isLive()
 {
-    return true;
+    return m_live;
 }
 
 
 /*
  * Returns true if this is strem is opened successfully and false otherwise.
  */
-bool OniStream::isOpened()
-{
-    return m_opened;
-}
 
 /*
  * Generates an OpenCV mat with the data from current frame
@@ -266,6 +268,7 @@ bool OniStream::next(VibeFrame& frame)
 
         frame.colorFrame.create(424, 512, CV_8UC3);
         memcpy(frame.colorFrame.data, pImgBuffer, 424*512*sizeof(openni::RGB888Pixel));
+        cv::cvtColor(frame.colorFrame, frame.colorFrame, cv::COLOR_BGR2RGB);
     }
 
     return true;
@@ -282,16 +285,17 @@ bool OniStream::previous(VibeFrame& frame)
 /*
  * Initializes (if necessary) and starts recording the session
  */
-void OniStream::record()
+void OniStream::record(string filename)
 {
     openni::Status rc = openni::STATUS_OK;
     if( !m_recorder.isValid()){
-        rc = initRecorder();
+        rc = initRecorder(filename);
     }
 
     if (rc == openni::STATUS_OK)
     {
         rc = m_recorder.start();
+        m_recording = true;
     }
 }
 
@@ -303,4 +307,6 @@ void OniStream::record()
 void OniStream::stopRecording()
 {
     m_recorder.stop();
+    m_recorder.destroy();
+    m_recording = false;
 }

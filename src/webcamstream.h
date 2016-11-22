@@ -1,15 +1,17 @@
 #ifndef WEBCAMSTREAM_H
 #define WEBCAMSTREAM_H
 
+#include <QObject>
+
 #include <opencv2/opencv.hpp>
-#include <opencv2/highgui.hpp>
 
 #include "videostream.h"
 
 class WebcamStream : public VideoStream
 {
+    Q_OBJECT
 public:
-    WebcamStream();
+    WebcamStream(VideoStream* parent=0);
 
     bool isLive();
     bool isOpened();
@@ -17,7 +19,7 @@ public:
     bool next(VibeFrame& frame);
     bool previous(VibeFrame& frame);
 
-    void play();
+//    void play();
 
 protected:
 
