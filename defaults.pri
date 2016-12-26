@@ -10,7 +10,8 @@ CONFIG += c++14
 LIBS += -L/usr/local/Cellar/opencv3/HEAD-acaa1e1_4/lib/ \
             -lopencv_core  \
             -lopencv_videoio \
-            -lopencv_imgproc
+            -lopencv_imgproc \
+            -lopencv_highgui
 
 INCLUDEPATH += /usr/local/Cellar/opencv3/HEAD-acaa1e1_4/include
 DEPENDPATH +=  /usr/local/Cellar/opencv3/HEAD-acaa1e1_4/include
@@ -27,4 +28,3 @@ DISTFILES += \
 HEADERS +=
 
 SOURCES +=
-

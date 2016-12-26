@@ -2,6 +2,7 @@
 #include "videostream.h"
 
 #include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
 
 ColorDetector::ColorDetector():
     m_lowH(0), m_highH(179),
