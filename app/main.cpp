@@ -76,7 +76,7 @@ int startApp(int argc, char *argv[]){
 
 int test(){
 
-    VibeOsc* sender = new VibeOsc("127.0.0.1", 50000);
+    VibeOsc* sender = new VibeOsc("127.0.0.1", 50505);
     sender->sendOsc("/address", "message", 1);
 
     return 0;
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 
 //    return startApp(argc, argv);
 
-    return setColor(argc, argv);
+//    return setColor(argc, argv);
 
 //    return test();
 

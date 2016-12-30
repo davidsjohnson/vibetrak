@@ -22,8 +22,8 @@ INCLUDEPATH += /usr/local/OpenNI_2.2/include
 DEPENDPATH  += /usr/local/OpenNI_2.2/include
 
 
-INCLUDEPATH += /usr/local/include/oscpack
-LIBS += -L/usr/local/lib -loscpack
+INCLUDEPATH += /Users/fortjay81/oscpack_1_1_0
+LIBS += -L/Users/fortjay81/oscpack_1_1_0 -loscpack
 
 
 DISTFILES += \
