@@ -31,6 +31,9 @@ void ColorDetector::setColorValues(VideoStream& colorStream)
 
         if (!frame.colorFrame.empty()){
             run(frame);
+            for (auto m : frame.mallets){
+                 rectangle( frame.colorFrame, m.tl(), m.br(), 255, 2, 8, 0 );
+            }
             cv::imshow("Threshold Values", frame.colorFrame);
             if (cv::waitKey(1) >= 0) break;
         }
@@ -74,6 +77,7 @@ void ColorDetector::run(VibeFrame& frame)
         cv::morphologyEx(dst, dst, cv::MORPH_CLOSE, kernel);
 
         frame.mallets = findBoundingBoxes(dst);
+//        frame.colorFrame = dst;
     }
 
 }

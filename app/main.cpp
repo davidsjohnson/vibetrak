@@ -11,6 +11,20 @@
 #include "colordetector.h"
 #include "utils.h"
 #include "streamwidget.h"
+#include "vibeosc.h"
+
+
+int setColor(int argc, char* argv[]){
+
+    const char* oniFile= "/Users/fortjay81/Projects/VibeTrak/vibe_test/all_keys.oni";
+    OniStream stream(oniFile);
+
+    ColorDetector cd;
+
+    cd.setColorValues(stream);
+
+    return 0;
+}
 
 
 
@@ -60,9 +74,22 @@ int startApp(int argc, char *argv[]){
 
 }
 
+int test(){
+
+    VibeOsc* sender = new VibeOsc("127.0.0.1", 50000);
+    sender->sendOsc("/address", "message", 1);
+
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
 
-    return startApp(argc, argv);
+//    return startApp(argc, argv);
+
+    return setColor(argc, argv);
+
+//    return test();
+
 
 }

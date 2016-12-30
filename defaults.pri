@@ -16,10 +16,14 @@ LIBS += -L/usr/local/Cellar/opencv3/HEAD-acaa1e1_4/lib/ \
 INCLUDEPATH += /usr/local/Cellar/opencv3/HEAD-acaa1e1_4/include
 DEPENDPATH +=  /usr/local/Cellar/opencv3/HEAD-acaa1e1_4/include
 
-LIBS += -L/usr/local/OpenNI_2.2/Redist/ -lOpenNI2
+LIBS += -L/usr/local/OpenNI_2.2/Redist -lOpenNI2
 
 INCLUDEPATH += /usr/local/OpenNI_2.2/include
 DEPENDPATH  += /usr/local/OpenNI_2.2/include
+
+
+INCLUDEPATH += /usr/local/include/oscpack
+LIBS += -L/usr/local/lib -loscpack
 
 
 DISTFILES += \

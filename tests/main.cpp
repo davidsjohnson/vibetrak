@@ -5,6 +5,7 @@
 #include "onistream.h"
 #include "vibeframe.h"
 #include "colordetector.h"
+#include "vibeosc.h"
 
 
 //BOOST_AUTO_TEST_CASE(webcam_test)
@@ -63,4 +64,11 @@ BOOST_AUTO_TEST_CASE(frame_test)
 
     BOOST_CHECK(frame.mallets.size() > 0);
 
+}
+
+BOOST_AUTO_TEST_CASE(osc_test)
+{
+    VibeOsc* sender = new VibeOsc("127.0.0.1", 50000);
+    BOOST_REQUIRE(sender!=nullptr);
+    sender->sendOsc("/address", "message", 1, 5, 10, 6.688);
 }
