@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "colordetector.h"
 #include "videostream.h"
 
@@ -65,6 +67,8 @@ void ColorDetector::run(VibeFrame& frame)
 
         // Convert image to HSV
         cv::Mat dst;
+//        cv::GaussianBlur(frame.colorFrame, frame.colorFrame, cv::Size(5,5), 1, 1);
+        cv::medianBlur(frame.colorFrame, frame.colorFrame, 5);
         cv::cvtColor(frame.colorFrame, dst, cv::COLOR_BGR2HSV);
 
         // find pixels in the range of HSV values
@@ -77,6 +81,12 @@ void ColorDetector::run(VibeFrame& frame)
         cv::morphologyEx(dst, dst, cv::MORPH_CLOSE, kernel);
 
         frame.mallets = findBoundingBoxes(dst);
+//        for (auto m : frame.mallets){
+//            rectangle( frame.depthFrame, m.tl(), m.br(), 255, 2, 8, 0 );  // REMOVE AFTER TESTING
+//            rectangle( frame.colorFrame, m.tl(), m.br(), 255, 2, 8, 0 );
+//        }
+
+
 //        frame.colorFrame = dst;
     }
 
@@ -90,7 +100,7 @@ vector<cv::Rect> ColorDetector::findBoundingBoxes(cv::Mat src)
     vector<cv::Vec4i> hierarchy;
 
     cv::Canny(src, cannyOutput, m_thresh, m_thresh*2);
-    cv::findContours(cannyOutput, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
+    cv::findContours(cannyOutput, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
     //Approximate Contours to Polys to find bounding boxes
     vector<vector<cv::Point>> contour_polys(contours.size());

@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include "vibeframe.h"
+#include "frameprocessor.h"
 
 class VideoStream : public QObject
 {
@@ -25,10 +26,13 @@ public:
     virtual void record(string filename) = 0;
     virtual void stopRecording() = 0;
 
+    void addProcessor(FrameProcessor* proc) {m_processors.push_back(proc);}
+
 
 protected:
     bool                    m_opened;
     bool                    m_recording;
+        std::vector<FrameProcessor*> m_processors;
 };
 
 #endif // VIDEOSTREAM_H

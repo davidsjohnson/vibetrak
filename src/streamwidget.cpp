@@ -1,4 +1,6 @@
 #include "streamwidget.h"
+#include "utils.h"
+#include "annotationwidget.h"
 
 #include <iostream>
 
@@ -13,8 +15,6 @@
 #include <QMenuBar>
 #include <QMessageBox>
 
-#include "utils.h"
-
 using namespace std;
 
 StreamWidget::StreamWidget(VideoStream* stream, QWidget *parent) :
@@ -24,8 +24,8 @@ StreamWidget::StreamWidget(VideoStream* stream, QWidget *parent) :
   m_timer(new QTimer(this))
 {
 
-    int x = 300;
-    int y = 100;
+    int x = 0;
+    int y = 0;
     int width = 512;
     int height = 424;
     setGeometry(x,y, width, height);
@@ -37,8 +37,8 @@ StreamWidget::StreamWidget(VideoStream* stream, QWidget *parent) :
 
 
     QVBoxLayout* layout = new QVBoxLayout;
-    cv::Mat temp(height, width, CV_8UC3, double(200));
-    QImage img = Mat2QImage(temp);
+    cv::Mat temp(height, width, CV_8UC3, double(0));
+    QImage img = utils::Mat2QImage(temp);
     QPixmap pMap = QPixmap::fromImage(img);
     m_lFrame->setPixmap(pMap);
     layout->addWidget(m_lFrame);
@@ -66,6 +66,11 @@ StreamWidget::StreamWidget(VideoStream* stream, QWidget *parent) :
     openAct->setStatusTip(tr("Open a previously created Kinect recording (ONI File)"));
     connect(openAct, SIGNAL (triggered()), this, SLOT (handleOpen()));
 
+    auto openAnnotator = new QAction(tr("&Annotate Bars"), this);
+    openAct->setShortcuts(QKeySequence::SelectAll);
+    openAct->setStatusTip("Annotate the locations of each Vibraphone Bar");
+    connect(openAnnotator, SIGNAL(triggered()), this, SLOT (handleOpenAnnotator()));
+
 //    auto liveAct = new QAction(tr("&Connect to Kinect"), this);
 //    liveAct->setShortcuts(QKeySequence::New);
 //    liveAct->setStatusTip(tr("Open a live Kinect stream"));
@@ -74,6 +79,7 @@ StreamWidget::StreamWidget(VideoStream* stream, QWidget *parent) :
     auto menuBar = new QMenuBar;
     auto fileMenu = menuBar->addMenu("File");
     fileMenu->addAction(openAct);
+    fileMenu->addAction(openAnnotator);
 //    fileMenu->addAction(liveAct);
 }
 
@@ -88,7 +94,7 @@ void StreamWidget::run()
     VibeFrame frame;
     m_stream->next(frame);
 
-    QImage img = Mat2QImage(frame.colorFrame);
+    QImage img = utils::Mat2QImage(frame.colorFrame);
     QPixmap pMap = QPixmap::fromImage(img);
     m_lFrame->setPixmap(pMap);
 }
@@ -99,6 +105,15 @@ void StreamWidget::handleOpen()
     openOniFile();
     start();
 }
+
+
+void StreamWidget::handleOpenAnnotator()
+{
+    m_timer->stop();
+    QWidget* annotator = new AnnotationWidget(m_stream, this);
+    annotator->show();
+}
+
 
 void StreamWidget::handleLive()
 {
@@ -158,7 +173,7 @@ void StreamWidget::handleRecord()
 
 void StreamWidget::start()
 {
-    m_timer->start(5);
+    m_timer->start(20);
 }
 
 void StreamWidget::stop()

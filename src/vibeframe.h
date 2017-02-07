@@ -11,9 +11,9 @@ using namespace std;
 class Point3d
 {
 public:
-    int x;
-    int y;
-    int z;
+    float x;
+    float y;
+    float z;
 
     Point3d():
         x(0), y(0), z(0)
@@ -25,6 +25,7 @@ public:
     {
     }
 };
+
 
 class VibeFrame
 {

@@ -5,15 +5,18 @@
 
 #include "videostream.h"
 #include "vibeframe.h"
+#include "frameprocessor.h"
 
-class ColorDetector
+class ColorDetector : public FrameProcessor
 {
 public:
     ColorDetector();
+    ~ColorDetector(){}
 
     void run(VibeFrame& frame);
     void setColorValues(VideoStream& colorStream);
     void setColorValues(int lowH, int highH, int lowS, int highS, int lowV, int highV, int thresh);
+
 
 private:
     // Red HSV Values

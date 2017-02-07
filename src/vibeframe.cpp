@@ -22,7 +22,7 @@ vector<Point3d> VibeFrame::getMalletLocations()
         Point3d p;
         p.x = r.x + (r.width/2);
         p.y = r.y + (r.height/2);
-        p.z = depthFrame.at<int>(cv::Point(p.x, p.y));
+        p.z = depthFrame.at<uint16_t>(cv::Point(p.x, p.y));
         locations.push_back(p);
     }
 

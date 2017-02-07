@@ -7,7 +7,6 @@
 
 #include "videostream.h"
 #include "onistream.h"
-//#include "vibeframe.h"
 
 class StreamWidget : public QWidget
 {
@@ -36,6 +35,7 @@ signals:
 public slots:
     void run();
     void handleOpen();
+    void handleOpenAnnotator();
     void handleRecord();
     void handleLive();
     void closing();

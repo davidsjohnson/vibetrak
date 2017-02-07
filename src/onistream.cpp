@@ -3,6 +3,8 @@
 #include <opencv/cv.h>
 #include <opencv2/imgproc.hpp>
 
+#include <iostream>
+
 #define TEXTURE_SIZE	512
 
 #define MIN_NUM_CHUNKS(data_size, chunk_size)	((((data_size)-1) / (chunk_size) + 1))
@@ -35,6 +37,13 @@ OniStream::~OniStream()
         delete []m_streams;
     }
     printf("OniStream Closed Successfully\n\n");
+
+    for (auto p : m_processors){
+        delete p;
+        printf("Processor Closed Successfully\n\n");
+    }
+
+
 }
 
 
@@ -235,11 +244,9 @@ bool OniStream::next(VibeFrame& frame)
     switch (changedIndex)
     {
     case 0:
-//        printf("#### Color ####\n");
         m_colorStream.readFrame(&m_colorFrame);
         break;
     case 1:
-//        printf("#### Depth ####\n");
         m_depthStream.readFrame(&m_depthFrame);
         break;
     default:
@@ -252,11 +259,15 @@ bool OniStream::next(VibeFrame& frame)
         const openni::DepthPixel* pImgBuffer = (const openni::DepthPixel*)m_depthFrame.getData();
 
         // Copy data buffer to an OpenCV Mat object
-        cv::Mat temp(480, 640, CV_16UC1);
-        memcpy(temp.data, pImgBuffer, 640*480*sizeof(openni::DepthPixel));
+//        cv::Mat temp(480, 640, CV_16UC1);
+//        memcpy(temp.data, pImgBuffer, 640*480*sizeof(openni::DepthPixel));
 
-        cv::Rect r(0, 0, 512, 424);
-        cv::normalize(temp(r), frame.depthFrame, 0, 255, cv::NORM_MINMAX, CV_8UC1);
+        frame.depthFrame.create(480, 640, CV_16UC1);
+        memcpy(frame.depthFrame.data, pImgBuffer, m_depthFrame.getDataSize());
+
+
+//        cv::Rect r(0, 0, 512, 424);
+//        cv::normalize(temp(r), frame.depthFrame, 0, 255, cv::NORM_MINMAX, CV_8UC1);
     }
 
     // Process Color Frame
@@ -269,6 +280,17 @@ bool OniStream::next(VibeFrame& frame)
         frame.colorFrame.create(424, 512, CV_8UC3);
         memcpy(frame.colorFrame.data, pImgBuffer, 424*512*sizeof(openni::RGB888Pixel));
         cv::cvtColor(frame.colorFrame, frame.colorFrame, cv::COLOR_BGR2RGB);
+    }
+
+    for (auto p : m_processors)
+    {
+        try{
+        p->run(frame);
+        }
+        catch(NoMalletsException& e)
+        {
+            std::cout << "Warning: No Mallets Found" << std::endl;
+        }
     }
 
     return true;

@@ -6,6 +6,7 @@
 #include <OpenNI.h>
 
 #include "videostream.h"
+#include "frameprocessor.h"
 
 class OniStream : public VideoStream
 {

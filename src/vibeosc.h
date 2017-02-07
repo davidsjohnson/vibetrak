@@ -10,7 +10,7 @@
 class VibeOsc
 {
 public:
-    VibeOsc(const char*  ipAddress="127.0.0.1", int port=505050);
+    VibeOsc(const char*  ipAddress="127.0.0.1", int port=10101);
 
     template<typename T, typename... Ts>
     void sendOsc(const char* address, T arg, Ts... args)
