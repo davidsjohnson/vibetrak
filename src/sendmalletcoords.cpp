@@ -1,23 +1,11 @@
 #include "sendmalletcoords.h"
+#include "utils.h"
 
 #include <opencv/cv.h>
 #include <opencv2/imgproc.hpp>
 
-Point3d kinect2realworld(Point3d kinectPoint)
-{
+using namespace  utils;
 
-    float cx = 254.878f;
-    float cy = 205.395f;
-    float f = 365.456f;
-
-
-    float z3D = kinectPoint.z;
-    float x3D = (kinectPoint.x - cx) * z3D / f;
-    float y3D = (kinectPoint.y - cy) * z3D / f;
-
-    return Point3d(x3D, y3D, z3D);
-
-}
 
 SendMalletCoords::SendMalletCoords():
     m_vibeosc()

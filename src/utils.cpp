@@ -34,4 +34,32 @@ namespace utils {
             return QImage(512, 480, QImage::Format_RGB888);
         }
     }
+
+    Point3d kinect2realworld(Point3d kinectPoint)
+    {
+
+        float cx = 254.878f;
+        float cy = 205.395f;
+        float f = 365.456f;
+
+
+        float z3D = kinectPoint.z;
+        float x3D = (kinectPoint.x - cx) * z3D / f;
+        float y3D = (kinectPoint.y - cy) * z3D / f;
+
+        return Point3d(x3D, y3D, z3D);
+
+    }
+
+    Point3d realworld2Kinect(Point3d realworld){
+        float cx = 254.878f;
+        float cy = 205.395f;
+        float f = 365.456f;
+
+        float depth = realworld.z;
+        float x = realworld.x * f / realworld.z + cx;
+        float y = realworld.y * f / realworld.z + cy;
+
+        return Point3d(x, y, depth);
+    }
 }

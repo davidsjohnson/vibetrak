@@ -8,6 +8,8 @@
 
 using namespace std;
 
+typedef uint16_t depth_type;
+
 class Point3d
 {
 public:

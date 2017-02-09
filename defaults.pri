@@ -28,7 +28,3 @@ LIBS += -L/Users/fortjay81/oscpack_1_1_0 -loscpack
 
 DISTFILES += \
     $$PWD/README.md
-
-HEADERS +=
-
-SOURCES +=
