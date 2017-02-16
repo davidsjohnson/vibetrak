@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include "colordetector.h"
-#include "videostream.h"
-
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
+
+#include "colordetector.h"
+#include "videostream.h"
 
 ColorDetector::ColorDetector():
     m_lowH(0), m_highH(179),
@@ -27,6 +27,7 @@ void ColorDetector::setColorValues(VideoStream& colorStream)
     cv::createTrackbar("Set V High", "HSV Control", &m_highV, 255);
     cv::createTrackbar("Canny Threshold", "HSV Control", &m_thresh,255);
 
+    // Run the OpenCV Window for setting HSV Values
     while(true){
         VibeFrame frame;
         colorStream.next(frame);
@@ -80,14 +81,8 @@ void ColorDetector::run(VibeFrame& frame)
         cv::morphologyEx(dst, dst, cv::MORPH_OPEN, kernel);
         cv::morphologyEx(dst, dst, cv::MORPH_CLOSE, kernel);
 
+        // Add mallets to Frame
         frame.mallets = findBoundingBoxes(dst);
-//        for (auto m : frame.mallets){
-//            rectangle( frame.depthFrame, m.tl(), m.br(), 255, 2, 8, 0 );  // REMOVE AFTER TESTING
-//            rectangle( frame.colorFrame, m.tl(), m.br(), 255, 2, 8, 0 );
-//        }
-
-
-//        frame.colorFrame = dst;
     }
 
 }

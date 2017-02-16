@@ -6,7 +6,6 @@ QT += widgets
 
 CONFIG += c++14
 
-
 LIBS += -L/usr/local/Cellar/opencv3/HEAD-acaa1e1_4/lib/ \
             -lopencv_core  \
             -lopencv_videoio \
@@ -21,10 +20,8 @@ LIBS += -L/usr/local/OpenNI_2.2/Redist -lOpenNI2
 INCLUDEPATH += /usr/local/OpenNI_2.2/include
 DEPENDPATH  += /usr/local/OpenNI_2.2/include
 
-
 INCLUDEPATH += /Users/fortjay81/oscpack_1_1_0
 LIBS += -L/Users/fortjay81/oscpack_1_1_0 -loscpack
-
 
 DISTFILES += \
     $$PWD/README.md

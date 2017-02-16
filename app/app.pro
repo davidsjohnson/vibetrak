@@ -1,9 +1,8 @@
 include(../defaults.pri)
 
-TARGET = VibeTrak
+TARGET = MalletTracker
 
 TEMPLATE = app
-#CONFIG += console
 CONFIG += app_bundle
 
 SOURCES += \

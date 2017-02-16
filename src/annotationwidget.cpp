@@ -3,6 +3,12 @@
 #include "annotationwidget.h"
 #include "utils.h"
 
+/**
+  Constructor for AnnotationWidget
+  @param stream the VideoStream being annotated
+  @param main the main Window of the application
+  @param parent the parent widget; 0 by default
+*/
 AnnotationWidget::AnnotationWidget(VideoStream* stream, StreamWidget* main, QWidget* parent) :
     QWidget(parent),
     m_stream(stream),
@@ -148,17 +154,21 @@ void AnnotationWidget::calculateBarLocations(vector<Point3d>& barLocations){
     // Add location of White Keys to list
     for(int i=0;i < RED_CIRCLES-1; ++i){
 
+        // find coordinates of the center of first circle used to interpolate locations
         qreal x1 = redCircles[i]->x() + (redCircles[i]->width() / 2);
         qreal y1 = redCircles[i]->y() + (redCircles[i]->height() / 2);
         qreal z1 = m_frame.depthFrame.at<depth_type>(y1, x1);
 
+        // find coordinates of the center of second circle used to interpolate locations
         qreal x2 = redCircles[i+1]->x() + (redCircles[i+1]->width() / 2);
         qreal y2 = redCircles[i+1]->y() + (redCircles[i+1]->height() / 2);
         qreal z2 = m_frame.depthFrame.at<depth_type>(y2, x2);
 
+        // convert points to real world data space
         auto temp1 = utils::kinect2realworld( Point3d(x1, y1, z1) );
         auto temp2 = utils::kinect2realworld( Point3d(x2, y2, z2) );
 
+        // Find the distance between the centers of each bar
         qreal XDist = temp2.x - temp1.x;
         qreal YDist = temp2.y - temp1.y;
         qreal ZDist = temp2.z - temp1.z;
@@ -166,6 +176,7 @@ void AnnotationWidget::calculateBarLocations(vector<Point3d>& barLocations){
         qreal newYDist = YDist / 7.0;
         qreal newZDist = ZDist / 7.0;
 
+        // Add locations for this segment of the white keys
         barLocations.push_back(Point3d(x1, y1, z1));
 
         for(int j=0; j < 6; ++j){
@@ -183,14 +194,17 @@ void AnnotationWidget::calculateBarLocations(vector<Point3d>& barLocations){
     // Add location of Black Keys to list
     for(int i=0;i < BLU_CIRCLES-1; i+=2){
 
+        // find coordinates of the center of first circle used to interpolate locations
         qreal x1 = blueCircles[i]->x() + blueCircles[i]->width() / 2;
         qreal y1 = blueCircles[i]->y() + blueCircles[i]->height() / 2;
         qreal z1 = m_frame.depthFrame.at<depth_type>(y1, x1);
 
+        // find coordinates of the center of second circle used to interpolate locations
         qreal x2 = blueCircles[i+1]->x() + blueCircles[i+1]->width() / 2;
         qreal y2 = blueCircles[i+1]->y() + blueCircles[i+1]->height() / 2;
         qreal z2 = m_frame.depthFrame.at<depth_type>(y2, x2);
 
+        // Convert to real world space
         auto temp1 = utils::kinect2realworld( Point3d(x1, y1, z1) );
         auto temp2 = utils::kinect2realworld( Point3d(x2, y2, z2) );
 
@@ -201,6 +215,7 @@ void AnnotationWidget::calculateBarLocations(vector<Point3d>& barLocations){
         qreal newYDist = YDist / 5.0;
         qreal newZDist = ZDist / 5.0;
 
+        // Add locations for this segment of the black keys
         barLocations.push_back(Point3d(x1, y1, z1));
         for(int j=0; j < 4; ++j){
 
