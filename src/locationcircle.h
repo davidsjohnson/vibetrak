@@ -1,14 +1,14 @@
 #ifndef LOCATIONCIRCLE_H
 #define LOCATIONCIRCLE_H
 
+#include <iostream>
+
 #include <QGraphicsItem>
 #include <Qt>
 #include <QPainter>
 #include <QBrush>
 #include <QPen>
 #include <QStyleOptionGraphicsItem>
-
-#include <iostream>
 
 class LocationCircle : public QGraphicsItem
 {

@@ -22,7 +22,8 @@ int setColor(int argc, char* argv[]){
     // Open a stream to use for color detection calibration
     // remove file from instaniate to use live kinect stream
     const char* oniFile= "/Users/fortjay81/Projects/VibeTrak/VibeTrak/vibe_test/all_keys.oni";
-    OniStream stream(oniFile);
+    const char* oniFile2 = "/Users/fortjay81/Projects/VibeTrak/data/001_2162017.oni";
+    OniStream stream(oniFile2);
 
     ColorDetector cd;
     cd.setColorValues(stream);
@@ -42,7 +43,9 @@ int startApp(int argc, char *argv[]){
 
     // Processor for detecting color from kinect stream; used for mallet tracking
     ColorDetector* cd = new ColorDetector;
-    cd->setColorValues(130, 179, 95, 255, 80, 255, 100);    // Values determined manually (TODO:
+//    cd->setColorValues(130, 179, 95, 255, 80, 255, 100);    // RED Mallets - Values determined manually (TODO:
+
+    cd->setColorValues(67, 99, 30, 172, 54, 255, 100);     // BLUE Mallets
 
     // Processor for sending the coordinates of each mallet via OSC
     SendMalletCoords* coords = new SendMalletCoords;

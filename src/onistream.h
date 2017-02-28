@@ -11,7 +11,6 @@
 class OniStream : public VideoStream
 {
     Q_OBJECT
-
 public:
     OniStream(QObject* parent=0);
     OniStream(const char* oniFile, QObject* parent=0);

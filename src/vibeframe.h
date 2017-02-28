@@ -26,7 +26,22 @@ public:
         x(x), y(y), z(z)
     {
     }
+
+    bool operator==(Point3d other)
+    {
+        return x == other.x && y == other.y && z == other.z;
+    }
+
+    friend ostream operator<< (ostream o, Point3d point);
+
 };
+
+
+inline ostream& operator<<(ostream& o, const Point3d& point){
+
+    o << point.x << ", " << point.y << ", " << point.z;
+    return o;
+}
 
 
 class VibeFrame

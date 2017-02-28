@@ -6,6 +6,7 @@
 #include "vibeframe.h"
 #include "colordetector.h"
 #include "vibeosc.h"
+#include "utils.h"
 
 
 //BOOST_AUTO_TEST_CASE(webcam_test)
@@ -71,4 +72,18 @@ BOOST_AUTO_TEST_CASE(osc_test)
     VibeOsc* sender = new VibeOsc("127.0.0.1", 50000);
     BOOST_REQUIRE(sender!=nullptr);
     sender->sendOsc("/address", "message", 1, 5, 10, 6.688);
+}
+
+
+BOOST_AUTO_TEST_CASE(util_test)
+{
+    Point3d kp1(24, 11, 12130);
+    Point3d rw = utils::kinect2realworld(kp1);
+    Point3d kp2 = utils::realworld2Kinect(rw);
+
+    std::cout << "KP1: " << kp1.x << " " << kp1.y << " " << kp1.z << std::endl;
+    std::cout << "RW: " << rw.x << " " << rw.y << " " << rw.z << std::endl;
+    std::cout << "KP2: " << kp2.x << " " << kp2.y << " " << kp2.z << std::endl;
+
+//    BOOST_CHECK_EQUAL(kp1, kp2);
 }

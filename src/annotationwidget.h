@@ -47,6 +47,8 @@ private:
     VideoStream* m_stream;              ///< main video stream from main window
     StreamWidget* m_main;               ///< main window
 
+    bool m_bDepthImage = false;
+
     QGraphicsPixmapItem* m_pMapItem;    ///< used to draw frame
     QGraphicsScene* frameGfxScene;      ///< Scene container for frame (needed when drawing circles)
     VibeFrame m_frame;                  ///< The current from from the stream
@@ -95,6 +97,8 @@ public slots:
      * \brief nextFrameCallback handles the Next Button to move to the next frame
      */
     void nextFrameCallback();
+
+    void depthFrameCallback();
 
     /*!
      * \brief closeCallback closes the widget and starts the main window

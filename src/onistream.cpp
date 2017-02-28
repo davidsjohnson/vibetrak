@@ -38,10 +38,10 @@ OniStream::~OniStream()
     }
     printf("OniStream Closed Successfully\n\n");
 
-    for (auto p : m_processors){
-        delete p;
-        printf("Processor Closed Successfully\n\n");
-    }
+//    for (auto p : m_processors){
+//        delete p;
+//        printf("Processor Closed Successfully\n\n");
+//    }
 
 
 }
@@ -171,6 +171,9 @@ openni::Status OniStream::init(const char* deviceUri)
     m_streams[0] = &m_colorStream;
     m_streams[1] = &m_depthStream;
 
+    VibeFrame frame;
+    next(frame);
+
     return openni::STATUS_OK;
 }
 
@@ -240,18 +243,21 @@ bool OniStream::next(VibeFrame& frame)
         return false;
     }
 
-    // Check which stream was updated
-    switch (changedIndex)
-    {
-    case 0:
+//    // Check which stream was updated
+//    switch (changedIndex)
+//    {
+//    case 0:
+//        m_colorStream.readFrame(&m_colorFrame);
+//        break;
+//    case 1:
+//        m_depthStream.readFrame(&m_depthFrame);
+//        break;
+//    default:
+//        printf("OniViewer: Error in Wait\n");
+//    }
+
         m_colorStream.readFrame(&m_colorFrame);
-        break;
-    case 1:
         m_depthStream.readFrame(&m_depthFrame);
-        break;
-    default:
-        printf("OniViewer: Error in Wait\n");
-    }
 
     // Process Depth Frame
     if (m_depthFrame.isValid())
@@ -269,6 +275,10 @@ bool OniStream::next(VibeFrame& frame)
 //        cv::Rect r(0, 0, 512, 424);
 //        cv::normalize(temp(r), frame.depthFrame, 0, 255, cv::NORM_MINMAX, CV_8UC1);
     }
+    else{
+
+        frame.depthFrame.create(480, 640, CV_16UC1);
+    }
 
     // Process Color Frame
     if (m_colorFrame.isValid()){
@@ -280,6 +290,9 @@ bool OniStream::next(VibeFrame& frame)
         frame.colorFrame.create(424, 512, CV_8UC3);
         memcpy(frame.colorFrame.data, pImgBuffer, 424*512*sizeof(openni::RGB888Pixel));
         cv::cvtColor(frame.colorFrame, frame.colorFrame, cv::COLOR_BGR2RGB);
+    }
+    else{
+        frame.colorFrame.create(424, 512, CV_8UC3);
     }
 
     for (auto p : m_processors)

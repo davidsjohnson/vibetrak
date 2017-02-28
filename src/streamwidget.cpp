@@ -133,8 +133,10 @@ void StreamWidget::handleLive()
         case QMessageBox::Yes:
             filename = QFileDialog::getOpenFileName(nullptr, QObject::tr("Open Oni Stream"),  QDir::home().path(), QObject::tr("OpenNI Files (*.oni)"));
             if (filename!=""){
+                auto temp = stream->getProcessors();
                 delete stream;
-                stream = new OniStream(filename.toUtf8());
+                stream = new OniStream(filename.toUtf8());  // Open a new stream with the same processors
+                stream->setProcessors(temp);
             }
             break;
         case QMessageBox::Retry:
@@ -173,7 +175,7 @@ void StreamWidget::handleRecord()
 
 void StreamWidget::start()
 {
-    m_timer->start(20);
+    m_timer->start(1);
 }
 
 void StreamWidget::stop()
@@ -186,9 +188,15 @@ void StreamWidget::openOniFile()
 {
     auto filename = QFileDialog::getOpenFileName(this, tr("Open Oni Stream"),  QDir::home().path(), tr("OpenNI Files (*.oni)"));
     if (filename!=""){
-        if (m_stream)
-            delete m_stream;
-        m_stream = new OniStream(filename.toUtf8());
+        if (m_stream){
+            auto temp = m_stream;
+            m_stream = new OniStream(filename.toUtf8());
+            m_stream->setProcessors(temp->getProcessors());
+            delete temp;
+        }
+        else{
+           m_stream = new OniStream(filename.toUtf8());
+        }
 
         if (m_btnRecord){
             QHBoxLayout* layout = findChild<QHBoxLayout*>("Controls");

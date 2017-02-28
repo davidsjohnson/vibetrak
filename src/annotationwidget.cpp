@@ -37,8 +37,12 @@ AnnotationWidget::AnnotationWidget(VideoStream* stream, StreamWidget* main, QWid
 
     topBarLayout->addWidget(instructLabel);
     topBarLayout->addWidget(nextButton);
-
     connect(nextButton, SIGNAL(released()), this, SLOT(nextFrameCallback()));
+
+    // Button For testing
+    QPushButton* depthButton = new QPushButton("Depth Frame");
+    connect(depthButton, SIGNAL(released()), this, SLOT(depthFrameCallback()));
+    topBarLayout->addWidget(depthButton);
 
     mainLayout->addLayout(topBarLayout);
 
@@ -122,11 +126,11 @@ void AnnotationWidget::sendCallback(){
     for(int i = 0; i < m_barLocations.size(); ++i){
 
         Point3d rw = utils::kinect2realworld(m_barLocations[i]);
-        qreal z = m_frame.depthFrame.at<uint16_t>(rw.y, rw.z);
+        qreal z = m_frame.depthFrame.at<depth_type>(m_barLocations[i].x, m_barLocations[i].y);
 
         std::stringstream address;
         address << "/bars/" << i;
-        m_vibeosc.sendOsc(address.str().c_str(), rw.x, rw.y, z);
+        m_vibeosc.sendOsc(address.str().c_str(), rw.x, rw.y, rw.z);
     }
 }
 
@@ -240,4 +244,20 @@ void AnnotationWidget::drawBarLocations(const vector<Point3d>& barLocations){
         circle->setPos(QPointF(p.x - CIRCLE_RADIUS/2, p.y - CIRCLE_RADIUS/2));
         greenCircles.push_back(circle);
     }
+}
+
+void AnnotationWidget::depthFrameCallback()
+{
+    if (m_bDepthImage){
+        QImage img = utils::Mat2QImage(m_frame.colorFrame);
+        QPixmap pMap = QPixmap::fromImage(img);
+        m_pMapItem->setPixmap(pMap);
+
+    }else{
+        QImage img = utils::Depth2QImage(m_frame.depthFrame);
+        QPixmap pMap = QPixmap::fromImage(img);
+        m_pMapItem->setPixmap(pMap);
+    }
+
+    m_bDepthImage = !m_bDepthImage;
 }

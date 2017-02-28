@@ -19,6 +19,7 @@ namespace utils {
     QImage Mat2QImage(const cv::Mat& src);
     Point3d kinect2realworld(Point3d kinectPoint);
     Point3d realworld2Kinect(Point3d realworld);
+    QImage Depth2QImage(const cv::Mat& src);
 
 }
 

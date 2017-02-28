@@ -1,11 +1,10 @@
 #ifndef STREAMRECORDER_H
 #define STREAMRECORDER_H
 
-
 #include <iostream> // for standard I/O
 #include <string>   // for strings
 
-#include<opencv/cv.h>
+#include <opencv/cv.h>
 #include <opencv2/core/core.hpp>        // Basic OpenCV structures (cv::Mat)
 #include <opencv2/highgui/highgui.hpp>  // Video write
 

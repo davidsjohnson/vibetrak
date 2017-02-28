@@ -27,12 +27,15 @@ public:
     virtual void stopRecording() = 0;
 
     void addProcessor(FrameProcessor* proc) {m_processors.push_back(proc);}
+    std::vector<FrameProcessor*> getProcessors(){return m_processors;}
+    void setProcessors(std::vector<FrameProcessor*> processors){m_processors = vector<FrameProcessor*>(processors);}
+
 
 
 protected:
     bool                    m_opened;
     bool                    m_recording;
-        std::vector<FrameProcessor*> m_processors;
+    std::vector<FrameProcessor*> m_processors;
 };
 
 #endif // VIDEOSTREAM_H

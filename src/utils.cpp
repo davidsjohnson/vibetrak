@@ -62,4 +62,13 @@ namespace utils {
 
         return Point3d(x, y, depth);
     }
+
+    QImage Depth2QImage(const cv::Mat &src)
+    {
+        cv::Mat tempDst;
+        depth2Gray(src, tempDst);
+
+        return Mat2QImage(tempDst);
+    }
+
 }

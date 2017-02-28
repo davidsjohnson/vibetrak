@@ -1,9 +1,11 @@
 #ifndef OSC_H
 #define OSC_H
 
+#include <string>
+
+// OSC Libraries
 #include "osc/OscOutboundPacketStream.h"
 #include "ip/UdpSocket.h"
-#include <string>
 
 #define OUTPUT_BUFFER_SIZE 1024
 
